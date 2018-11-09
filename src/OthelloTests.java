@@ -91,11 +91,15 @@ public class OthelloTests {
         pos.initialize();
         OthelloAction action = new OthelloAction(6, 4);
         pos.makeMove(action);
-        action = pos.getMoves().get(0);
+        action = new OthelloAction(4, 3);
         pos.makeMove(action);
-        action = pos.getMoves().get(0);
+        action = new OthelloAction(3, 2);
         pos.makeMove(action);
         assertEquals(pos.board[4][3], 'W');
+        pos.board[4][3] = 'B';
+        action = new OthelloAction(6, 5);
+        pos.makeMove(action);
+        assertEquals(pos.board[5][4], 'B');
     }
 
 

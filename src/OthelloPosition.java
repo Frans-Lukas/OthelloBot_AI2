@@ -110,11 +110,6 @@ public class OthelloPosition {
 	 * Return true if a neighbour of the given color exists at position x and y.
 	 */
 	private boolean enemyNeighbourExists(char enemyColor, int x_pos, int y_pos) {
-
-		if(y_pos == 6 && x_pos == 4){
-			System.out.println();
-		}
-
 		for (int y = y_pos - 1; y <= y_pos + 1; y++) {
 			for (int x = x_pos - 1; x <= x_pos + 1; x++) {
 				if (inside_bounds(x, y) && board[x][y] == enemyColor) {
@@ -171,32 +166,39 @@ public class OthelloPosition {
 		for (int y = action.getColumn() - 1; y <= action.getColumn() + 1; y++) {
 			for (int x = action.getRow() - 1; x <= action.getRow() + 1; x++) {
 				if (inside_bounds(x, y) && board[x][y] == enemyColor) {
-					int x_dir = x - action.getRow();
-					int y_dir = y - action.getColumn();
-
-					int x_pos = x;
-					int y_pos = y;
-
-					ArrayList<Point> pointsToFlip = new ArrayList<>();
-
-					//follow the direction until the position is no longer enemy color or out of bounds.
-					while(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == enemyColor){
-						pointsToFlip.add(new Point(x_pos, y_pos));
-						x_pos += x_dir;
-						y_pos += y_dir;
-					}
-
-					if(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == playerColor){
-						for (Point point : pointsToFlip) {
-							board[point.x][point.y] = playerColor;
-						}
-					}
-				}
+                    traceLineToFlip(action, enemyColor, playerColor, y, x);
+                }
 			}
 		}
 	}
 
-	/**
+    private void traceLineToFlip(OthelloAction action, char enemyColor, char playerColor, int y, int x) {
+        //calculate direction
+	    int x_dir = x - action.getRow();
+        int y_dir = y - action.getColumn();
+
+        int x_pos = x;
+        int y_pos = y;
+
+        ArrayList<Point> disksToFlip = new ArrayList<>();
+
+        //follow the direction until the position is no longer enemy color or out of bounds.
+        // Add disks to list for flipping.
+        while(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == enemyColor){
+            disksToFlip.add(new Point(x_pos, y_pos));
+            x_pos += x_dir;
+            y_pos += y_dir;
+        }
+
+        //
+        if(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == playerColor){
+            for (Point disk : disksToFlip) {
+                board[disk.x][disk.y] = playerColor;
+            }
+        }
+    }
+
+    /**
 	 * Gives the number of points for the given action.
 	 * If zero is returned, the move is invalid.
 	 */
@@ -208,13 +210,15 @@ public class OthelloPosition {
 		for (int y = action.getColumn() - 1; y <= action.getColumn() + 1; y++) {
 			for (int x = action.getRow() - 1; x <= action.getRow() + 1; x++) {
 				if(inside_bounds(x, y) && board[x][y] == enemyColor){
-					int x_dir = x - action.getRow();
+					//calculate direction
+				    int x_dir = x - action.getRow();
 					int y_dir = y - action.getColumn();
 
 					int x_pos = x;
 					int y_pos = y;
 					int counter = 0;
-
+                    if(x_dir == 0 && y_dir == 0)
+                        return 0;
 					//follow the direction until the position is no longer enemy color or out of bounds.
 					while(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == enemyColor){
 						counter++;
