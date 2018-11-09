@@ -18,6 +18,11 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     @Override
     public OthelloAction evaluate(OthelloPosition position) {
         ArrayList<OthelloAction> actions = position.getMoves();
+        if(actions.size() == 0){
+            OthelloAction passingAction = new OthelloAction(0,0);
+            passingAction.pass = true;
+            return passingAction;
+        }
         for (int i = 0; i < actions.size(); i++) {
             OthelloPosition posToMaybeMake = position.clone();
             try {

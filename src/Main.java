@@ -8,9 +8,13 @@ public class Main {
             try {
                 OthelloAction actionToDo = solver.evaluate(pos);
                 String playerColor = pos.playerToMove ? "White" : "Black";
+                if(actionToDo.isPassMove()){
+                    System.out.println(playerColor + " is passing.");
+                } else{
+                    System.out.println(playerColor + " is making a move on pos X: " + actionToDo.column + ", Y: " + actionToDo.row);
+                }
+                pos.makeMove(actionToDo);
                 pos.illustrate();
-                System.out.println(playerColor + " is making a move on pos X: " + actionToDo.column + ", Y: " + actionToDo.row);
-                pos.makeMove(solver.evaluate(pos));
 
             } catch (IllegalMoveException e) {
                 e.printStackTrace();
