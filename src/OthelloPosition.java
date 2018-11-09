@@ -154,14 +154,14 @@ public class OthelloPosition {
 		char playerColor = playerToMove ? 'W' : 'B';
 		char enemyColor = playerToMove ? 'B' : 'W';
 
-		playerToMove = !playerToMove;
+        flipEnemyDisks(action, enemyColor);
+        playerToMove = !playerToMove;
 
-		if(action.isPassMove()){
-			return this;
-		}
+        if(action.isPassMove()){
+            return this;
+        }
 
-		board[action.getRow()][action.getColumn()] = playerColor;
-		flipEnemyDisks(action, enemyColor);
+        board[action.getRow()][action.getColumn()] = playerColor;
 
 		return this;
 	}
@@ -176,20 +176,20 @@ public class OthelloPosition {
 
 					int x_pos = x;
 					int y_pos = y;
-					int counter = 0;
 
 					ArrayList<Point> pointsToFlip = new ArrayList<>();
 
 					//follow the direction until the position is no longer enemy color or out of bounds.
 					while(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == enemyColor){
-						counter++;
 						pointsToFlip.add(new Point(x_pos, y_pos));
 						x_pos += x_dir;
 						y_pos += y_dir;
 					}
-					for (Point point : pointsToFlip) {
 
-
+					if(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == playerColor){
+						for (Point point : pointsToFlip) {
+							board[point.x][point.y] = playerColor;
+						}
 					}
 				}
 			}

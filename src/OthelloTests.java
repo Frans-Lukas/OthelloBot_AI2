@@ -85,4 +85,28 @@ public class OthelloTests {
         assertEquals(pos.getMoves().size(), 0);
     }
 
+    @Test
+    public void makeSureDiskFlippingWorks() throws IllegalMoveException {
+        OthelloPosition pos = new OthelloPosition();
+        pos.initialize();
+        OthelloAction action = new OthelloAction(6, 4);
+        pos.makeMove(action);
+        action = pos.getMoves().get(0);
+        pos.makeMove(action);
+        action = pos.getMoves().get(0);
+        pos.makeMove(action);
+        assertEquals(pos.board[4][3], 'W');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }
