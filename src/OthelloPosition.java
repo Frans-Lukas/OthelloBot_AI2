@@ -74,8 +74,8 @@ public class OthelloPosition {
 	 * board.
 	 */
 	public void initialize() {
-		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2 + 1] = 'W';
-		board[BOARD_SIZE / 2][BOARD_SIZE / 2 + 1] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2] = 'B';
+		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 - 1][BOARD_SIZE / 2 - 1] = 'W';
+		board[BOARD_SIZE / 2][BOARD_SIZE / 2 - 1] = board[BOARD_SIZE / 2 - 1][BOARD_SIZE / 2] = 'B';
 		playerToMove = true;
 	}
 
@@ -91,8 +91,8 @@ public class OthelloPosition {
 		char enemyColor = playerToMove ? 'B' : 'W';
 
 		ArrayList<OthelloAction> validMoves = new ArrayList<OthelloAction>();
-		for (int y = 0; y <= BOARD_SIZE; y++) {
-			for (int x = 0; x <= BOARD_SIZE; x++) {
+		for (int y = 0; y < BOARD_SIZE; y++) {
+			for (int x = 0; x < BOARD_SIZE; x++) {
 				if(board[x][y] == 'E' && enemyNeighbourExists(enemyColor, x, y)){
 					OthelloAction acition = new OthelloAction(x, y);
 					if(numPointsFor(acition) > 0){
@@ -105,6 +105,21 @@ public class OthelloPosition {
 		return validMoves;
 	}
 
+
+	public boolean canMakeMove(){
+		char enemyColor = playerToMove ? 'B' : 'W';
+		for (int y = 0; y < BOARD_SIZE; y++) {
+			for (int x = 0; x < BOARD_SIZE; x++) {
+				if(board[x][y] == 'E' && enemyNeighbourExists(enemyColor, x, y)){
+					OthelloAction acition = new OthelloAction(x, y);
+					if(numPointsFor(acition) > 0){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Return true if a neighbour of the given color exists at position x and y.
@@ -137,10 +152,9 @@ public class OthelloPosition {
 	public OthelloPosition makeMove(OthelloAction action)
 			throws IllegalMoveException {
 
-		/*
-		 * TODO: write the code for this method and whatever helper functions it
-		 * needs.
-		 */
+		if(action.isPassMove()){
+			return this;
+		}
 
 		if(numPointsFor(action) == 0){
 			throw new IllegalMoveException(action);
@@ -149,12 +163,9 @@ public class OthelloPosition {
 		char playerColor = playerToMove ? 'W' : 'B';
 		char enemyColor = playerToMove ? 'B' : 'W';
 
-        flipEnemyDisks(action, enemyColor);
-        playerToMove = !playerToMove;
+		flipEnemyDisks(action, enemyColor);
+		playerToMove = !playerToMove;
 
-        if(action.isPassMove()){
-            return this;
-        }
 
         board[action.getRow()][action.getColumn()] = playerColor;
 
@@ -237,8 +248,8 @@ public class OthelloPosition {
 	}
 
 	public boolean inside_bounds(int x, int y) {
-		if(x <= BOARD_SIZE && x >= 0){
-			if(y <= BOARD_SIZE && y >= 0){
+		if(x < BOARD_SIZE && x >= 0){
+			if(y < BOARD_SIZE && y >= 0){
 				return true;
 			}
 		}
@@ -269,9 +280,9 @@ public class OthelloPosition {
 			System.out.print("| " + i + " ");
 		System.out.println("|");
 		printHorizontalBorder();
-		for (int i = 1; i <= BOARD_SIZE; i++) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
 			System.out.print(" " + i + " ");
-			for (int j = 1; j <= BOARD_SIZE; j++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
 				if (board[i][j] == 'W') {
 					System.out.print("| W ");
 				} else if (board[i][j] == 'B') {
@@ -280,7 +291,7 @@ public class OthelloPosition {
 					System.out.print("|   ");
 				}
 			}
-			System.out.println("| " + i + " ");
+			System.out.println("| " + (i + 1) + " ");
 			printHorizontalBorder();
 		}
 		System.out.print("   ");

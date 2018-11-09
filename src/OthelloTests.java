@@ -107,22 +107,11 @@ public class OthelloTests {
         OthelloPosition pos = new OthelloPosition();
         pos.initialize();
         NaiveOthelloEvaluator evaluator = new NaiveOthelloEvaluator();
-        assertEquals(evaluator.evaluate(pos), 2);
+        assertEquals(evaluator.evaluate(pos), 0);
         pos.board[0][0] = 'W';
-        assertEquals(evaluator.evaluate(pos), 3);
+        assertEquals(evaluator.evaluate(pos), 1);
         pos.board[1][1] = 'B';
-        assertEquals(evaluator.evaluate(pos), 3);
+        assertEquals(evaluator.evaluate(pos), 0);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }

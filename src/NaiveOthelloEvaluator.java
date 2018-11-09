@@ -3,14 +3,17 @@ public class NaiveOthelloEvaluator implements OthelloEvaluator {
     public int evaluate(OthelloPosition position) {
         //naive count number of my colors.
         char myColor = position.playerToMove ? 'W' : 'B';
-        int count = 0;
+        int playerCount = 0;
+        int enemyCount = 0;
         for (char[] boardRows : position.board) {
             for (char boardPositionDisk : boardRows) {
                 if(boardPositionDisk == myColor){
-                    count++;
+                    playerCount++;
+                } else if(boardPositionDisk != 'E'){
+                    enemyCount++;
                 }
             }
         }
-        return count;
+        return playerCount - enemyCount;
     }
 }
