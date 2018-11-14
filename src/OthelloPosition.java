@@ -153,6 +153,7 @@ public class OthelloPosition {
 			throws IllegalMoveException {
 
 		if(action.isPassMove()){
+			playerToMove = !playerToMove;
 			return this;
 		}
 

@@ -1,7 +1,9 @@
-public class Main {
+public class Othello {
 
     public static void main(String[] args) {
-        OthelloPosition pos = new OthelloPosition();
+
+        OthelloPosition pos = new OthelloPosition(args[1]);
+        int timeLimie = Integer.parseInt(args[2]);
         pos.initialize();
         MyOthelloAlgorithm solver = new MyOthelloAlgorithm();
         while(solver.gameIsPlayable(pos)){

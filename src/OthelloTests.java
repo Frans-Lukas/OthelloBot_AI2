@@ -129,8 +129,18 @@ public class OthelloTests {
     }
 
     @Test
-    public void gameIsPlayableWorks(){
-
+    public void gameIsPlayableWorks() throws IllegalMoveException {
+        MyOthelloAlgorithm solver = new MyOthelloAlgorithm();
+        OthelloPosition pos = new OthelloPosition();
+        assertFalse(solver.gameIsPlayable(pos));
+        pos.initialize();
+        assertTrue(solver.gameIsPlayable(pos));
+        pos.makeMove(pos.getMoves().get(0));
+        pos.playerToMove = !pos.playerToMove;
+        pos.makeMove(pos.getMoves().get(0));
+        assertFalse(pos.canMakeMove());
+        pos.playerToMove = !pos.playerToMove;
+        assertFalse(solver.gameIsPlayable(pos));
     }
 
 

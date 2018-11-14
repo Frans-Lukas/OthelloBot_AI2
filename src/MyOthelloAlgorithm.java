@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MyOthelloAlgorithm implements OthelloAlgorithm {
     private OthelloEvaluator evaluator;
-    private int maxDepth = 7;
+    private int maxDepth = 8;
 
     public MyOthelloAlgorithm() {
         evaluator = new NaiveOthelloEvaluator();
@@ -27,25 +27,15 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
             return passingAction;
         }
 
-        ExecutorService es = Executors.newCachedThreadPool();
-        for (OthelloAction action : actions) {
+        actions.stream().parallel().forEach(action -> {
             OthelloPosition posToMaybeMake = position.clone();
-            es.execute(() -> {
-                try {
-                    posToMaybeMake.makeMove(action);
-                    action.setValue(alphaBeta(posToMaybeMake));
-                } catch (IllegalMoveException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-
-        es.shutdown();
-        try {
-            while(!es.awaitTermination(1, TimeUnit.MINUTES));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            try {
+                posToMaybeMake.makeMove(action);
+                action.setValue(alphaBeta(posToMaybeMake));
+            } catch (IllegalMoveException e) {
+                e.printStackTrace();
+            }
+        });
         actions.sort(Comparator.comparingInt(OthelloAction::getValue));
 
         return actions.get(actions.size() - 1);
@@ -63,7 +53,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     public boolean gameIsPlayable(OthelloPosition playerTurn){
         OthelloPosition oppositePlayerTurn = playerTurn.clone();
         oppositePlayerTurn.playerToMove = !oppositePlayerTurn.playerToMove;
-        return playerTurn.canMakeMove() && oppositePlayerTurn.canMakeMove();
+        return playerTurn.canMakeMove() || oppositePlayerTurn.canMakeMove();
     }
 
     private int maxValue(OthelloPosition pos, int alpha, int beta, int currentDepth) throws IllegalMoveException {
