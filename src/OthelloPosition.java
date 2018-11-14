@@ -12,7 +12,7 @@ import java.lang.*;
 public class OthelloPosition {
 
 	/** For a normal Othello game, BOARD_SIZE is 8. */
-	protected static final int BOARD_SIZE = 8;
+	public static final int BOARD_SIZE = 8;
 
 	/** True if the first player (white) has the move. */
 	protected boolean playerToMove;
@@ -74,8 +74,8 @@ public class OthelloPosition {
 	 * board.
 	 */
 	public void initialize() {
-		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 - 1][BOARD_SIZE / 2 - 1] = 'W';
-		board[BOARD_SIZE / 2][BOARD_SIZE / 2 - 1] = board[BOARD_SIZE / 2 - 1][BOARD_SIZE / 2] = 'B';
+		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2 + 1] = 'W';
+		board[BOARD_SIZE / 2][BOARD_SIZE / 2 + 1] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2] = 'B';
 		playerToMove = true;
 	}
 
@@ -91,8 +91,8 @@ public class OthelloPosition {
 		char enemyColor = playerToMove ? 'B' : 'W';
 
 		ArrayList<OthelloAction> validMoves = new ArrayList<OthelloAction>();
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
+		for (int y = 1; y <= BOARD_SIZE; y++) {
+			for (int x = 1; x <= BOARD_SIZE; x++) {
 				if(board[x][y] == 'E' && enemyNeighbourExists(enemyColor, x, y)){
 					OthelloAction acition = new OthelloAction(x, y);
 					if(numPointsFor(acition) > 0){
@@ -108,8 +108,8 @@ public class OthelloPosition {
 
 	public boolean canMakeMove(){
 		char enemyColor = playerToMove ? 'B' : 'W';
-		for (int y = 0; y < BOARD_SIZE; y++) {
-			for (int x = 0; x < BOARD_SIZE; x++) {
+		for (int y = 1; y <= BOARD_SIZE; y++) {
+			for (int x = 1; x <= BOARD_SIZE; x++) {
 				if(board[x][y] == 'E' && enemyNeighbourExists(enemyColor, x, y)){
 					OthelloAction acition = new OthelloAction(x, y);
 					if(numPointsFor(acition) > 0){
@@ -248,8 +248,8 @@ public class OthelloPosition {
 	}
 
 	public boolean inside_bounds(int x, int y) {
-		if(x < BOARD_SIZE && x >= 0){
-			if(y < BOARD_SIZE && y >= 0){
+		if(x <= BOARD_SIZE && x >= 1){
+			if(y <= BOARD_SIZE && y >= 1){
 				return true;
 			}
 		}
@@ -280,9 +280,9 @@ public class OthelloPosition {
 			System.out.print("| " + i + " ");
 		System.out.println("|");
 		printHorizontalBorder();
-		for (int i = 0; i < BOARD_SIZE; i++) {
+		for (int i = 1; i <= BOARD_SIZE; i++) {
 			System.out.print(" " + i + " ");
-			for (int j = 0; j < BOARD_SIZE; j++) {
+			for (int j = 1; j <= BOARD_SIZE; j++) {
 				if (board[i][j] == 'W') {
 					System.out.print("| W ");
 				} else if (board[i][j] == 'B') {
@@ -291,7 +291,7 @@ public class OthelloPosition {
 					System.out.print("|   ");
 				}
 			}
-			System.out.println("| " + (i + 1) + " ");
+			System.out.println("| " + i + " ");
 			printHorizontalBorder();
 		}
 		System.out.print("   ");

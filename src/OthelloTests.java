@@ -18,7 +18,7 @@ public class OthelloTests {
     public void insideBoundsShouldReturnTrueOnValidPosition(){
         OthelloPosition pos = new OthelloPosition();
         assertTrue(pos.inside_bounds(8, 8));
-        assertTrue(pos.inside_bounds(0, 0));
+        assertTrue(pos.inside_bounds(1, 1));
         assertTrue(pos.inside_bounds(5, 6));
     }
 
@@ -108,10 +108,31 @@ public class OthelloTests {
         pos.initialize();
         NaiveOthelloEvaluator evaluator = new NaiveOthelloEvaluator();
         assertEquals(evaluator.evaluate(pos), 0);
-        pos.board[0][0] = 'W';
+        pos.board[1][1] = 'W';
         assertEquals(evaluator.evaluate(pos), 1);
-        pos.board[1][1] = 'B';
+        pos.board[2][2] = 'B';
         assertEquals(evaluator.evaluate(pos), 0);
     }
+
+    @Test
+    public void canMakeMoveWorks() throws IllegalMoveException {
+        OthelloPosition pos = new OthelloPosition();
+        assertFalse(pos.canMakeMove());
+        pos.initialize();
+        assertTrue(pos.canMakeMove());
+        pos.makeMove(pos.getMoves().get(0));
+        pos.playerToMove = !pos.playerToMove;
+        pos.makeMove(pos.getMoves().get(0));
+        assertFalse(pos.canMakeMove());
+        pos.playerToMove = !pos.playerToMove;
+        assertFalse(pos.canMakeMove());
+    }
+
+    @Test
+    public void gameIsPlayableWorks(){
+
+    }
+
+
 
 }

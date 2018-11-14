@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MyOthelloAlgorithm implements OthelloAlgorithm {
     private OthelloEvaluator evaluator;
@@ -23,16 +26,27 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
             passingAction.pass = true;
             return passingAction;
         }
-        for (int i = 0; i < actions.size(); i++) {
+
+        ExecutorService es = Executors.newCachedThreadPool();
+        for (OthelloAction action : actions) {
             OthelloPosition posToMaybeMake = position.clone();
-            try {
-                posToMaybeMake.makeMove(actions.get(i));
-                actions.get(i).setValue(alphaBeta(posToMaybeMake));
-            } catch (IllegalMoveException e) {
-                e.printStackTrace();
-            }
+            es.execute(() -> {
+                try {
+                    posToMaybeMake.makeMove(action);
+                    action.setValue(alphaBeta(posToMaybeMake));
+                } catch (IllegalMoveException e) {
+                    e.printStackTrace();
+                }
+            });
         }
-        Collections.sort(actions, Comparator.comparingInt(OthelloAction::getValue));
+
+        es.shutdown();
+        try {
+            while(!es.awaitTermination(1, TimeUnit.MINUTES));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        actions.sort(Comparator.comparingInt(OthelloAction::getValue));
 
         return actions.get(actions.size() - 1);
     }

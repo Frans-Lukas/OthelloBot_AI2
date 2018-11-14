@@ -21,7 +21,6 @@ public class Main {
             }
         }
 
-        NaiveOthelloEvaluator evaluator = new NaiveOthelloEvaluator();
         int whiteScore = 0;
         int blackScore = 0;
         for (char[] chars : pos.board) {
@@ -33,6 +32,7 @@ public class Main {
                 }
             }
         }
+
         System.out.println("White got score: " + whiteScore);
         System.out.println("Black got score: " + blackScore);
     }
