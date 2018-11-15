@@ -17,9 +17,6 @@ public class OthelloPosition {
 	/** True if the first player (white) has the move. */
 	protected boolean playerToMove;
 
-	int whiteDisks = 0;
-	int blackDisks = 0;
-
 	/**
 	 * The representation of the board. For convenience, the array actually has
 	 * two columns and two rows more that the actual game board. The 'middle' is
@@ -61,10 +58,8 @@ public class OthelloPosition {
 					c = 'E';
 				} else if (s.charAt(i) == 'O') {
 					c = 'W';
-					whiteDisks++;
 				} else {
 					c = 'B';
-					blackDisks++;
 				}
 				int column = ((i - 1) % 8) + 1;
 				int row = (i - 1) / 8 + 1;
@@ -82,8 +77,6 @@ public class OthelloPosition {
 		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2 + 1] = 'W';
 		board[BOARD_SIZE / 2][BOARD_SIZE / 2 + 1] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2] = 'B';
 		playerToMove = true;
-		whiteDisks = 2;
-		blackDisks = 2;
 	}
 
 	/* getMoves and helper functions */
@@ -353,12 +346,6 @@ public class OthelloPosition {
 		char playerColor = playerToMove ? 'W' : 'B';
 		char enemyColor = playerToMove ? 'B' : 'W';
 
-		if(playerToMove){
-		    whiteDisks++;
-        } else{
-		    blackDisks++;
-        }
-
 		flipEnemyDisks(action, enemyColor);
 		playerToMove = !playerToMove;
 
@@ -401,13 +388,6 @@ public class OthelloPosition {
         if(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == playerColor){
             for (Point disk : disksToFlip) {
                 board[disk.x][disk.y] = playerColor;
-                if(playerColor == 'W'){
-                    whiteDisks++;
-                    blackDisks--;
-                }  else if(playerColor == 'B'){
-                    whiteDisks--;
-                    blackDisks++;
-                }
             }
         }
     }
