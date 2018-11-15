@@ -25,5 +25,5 @@ if [ $do_compile -eq 1 ]; then
 	javac *.java
 else
 	# Call your Java program with a position and time limit:
-	java OthelloRealPlayer $position $time_limit
+	java OthelloRandom $position $time_limit
 fi

@@ -394,9 +394,9 @@ public class OthelloPosition {
 
     public int getNumEmptySpaces(){
 	    int num = 0;
-        for (char[] chars : board) {
-            for (char aChar : chars) {
-                if(aChar == 'E'){
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if(board[i][j] == 'E'){
                     num++;
                 }
             }

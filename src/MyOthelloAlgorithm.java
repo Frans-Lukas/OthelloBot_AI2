@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class MyOthelloAlgorithm implements OthelloAlgorithm {
     private OthelloEvaluator evaluator;
     private int currMaxDepth;
-    private int maxDepth = 4;
+    private int maxDepth = 6;
     private long timeLimit;
     private long currTime;
     private boolean reachedMaxDepth = false;
@@ -32,7 +32,6 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         currMaxDepth = maxDepth;
         while(isBelowTimeLimit()){
             currMaxDepth++;
-            reachedMaxDepth = false;
             actions.stream().parallel().forEach(action -> {
                 try {
                     OthelloPosition posToMaybeMake = position.clone();
@@ -45,7 +44,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
                     e.printStackTrace();
                 }
             });
-            if(currMaxDepth >= 20){
+            if(currMaxDepth >= 30){
                 break;
             }
         }
@@ -61,7 +60,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     }
 
     public int alphaBeta(OthelloPosition pos) throws IllegalMoveException {
-        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, pos.playerToMove);
     }
 
     public boolean gameIsPlayable(OthelloPosition playerTurn){
@@ -74,8 +73,9 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         return System.nanoTime() - currTime < (timeLimit)* 1000000000;
     }
 
-    private int maxValue(OthelloPosition pos, int alpha, int beta, int currentDepth) throws IllegalMoveException {
+    private int maxValue(OthelloPosition pos, int alpha, int beta, int currentDepth, boolean isWhite) throws IllegalMoveException {
         if(isLeaf(pos, currentDepth)){
+            pos.playerToMove = true;
             return evaluator.evaluate(pos);
         }
         int value = Integer.MIN_VALUE;
@@ -84,7 +84,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         for (OthelloAction action : actions) {
             OthelloPosition tempPos = pos.clone();
             tempPos.makeMove(action);
-            value = Math.max(value, minValue(tempPos, alpha, beta, currentDepth + 1));
+            value = Math.max(value, minValue(tempPos, alpha, beta, currentDepth + 1, isWhite));
             alpha = Math.max(alpha, value);
             if(alpha >= beta){
                 break;
@@ -93,8 +93,9 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         return value;
     }
 
-    private int minValue(OthelloPosition pos, int alpha, int beta, int currentDepth) throws IllegalMoveException {
+    private int minValue(OthelloPosition pos, int alpha, int beta, int currentDepth, boolean isWhite) throws IllegalMoveException {
         if(isLeaf(pos, currentDepth)){
+            pos.playerToMove = true;
             return evaluator.evaluate(pos);
         }
         int value = Integer.MAX_VALUE;
@@ -103,7 +104,8 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         for (OthelloAction action : actions) {
             OthelloPosition tempPos = pos.clone();
             tempPos.makeMove(action);
-            value = Math.min(value, maxValue(tempPos, alpha, beta, currentDepth + 1));
+
+            value = Math.min(value, maxValue(tempPos, alpha, beta, currentDepth + 1, pos.playerToMove));
             beta = Math.min(beta, value);
             if(alpha >= beta){
                 break;
@@ -120,7 +122,8 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
             int value = Integer.MIN_VALUE;
             ArrayList<OthelloAction> actions = pos.getMoves();
             for (OthelloAction action : actions) {
-                OthelloPosition tempPos = pos.makeMove(action);
+                OthelloPosition tempPos = pos.clone();
+                tempPos.makeMove(action);
                 value = Math.max(value, miniMax(tempPos, currentDepth + 1));
             }
             return value;
@@ -128,7 +131,8 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
             int value = Integer.MAX_VALUE;
             ArrayList<OthelloAction> actions = pos.getMoves();
             for (OthelloAction action : actions) {
-                OthelloPosition tempPos = pos.makeMove(action);
+                OthelloPosition tempPos = pos.clone();
+                tempPos.makeMove(action);
                 value = Math.min(value, miniMax(tempPos, currentDepth + 1));
             }
             return value;
