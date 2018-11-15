@@ -12,5 +12,6 @@ public class Othello {
         } else{
             System.out.println("(" + actionToDo.getRow() + "," + actionToDo.getColumn() + ")");
         }
+        //pos.illustrate();
     }
 }

@@ -17,6 +17,9 @@ public class OthelloPosition {
 	/** True if the first player (white) has the move. */
 	protected boolean playerToMove;
 
+	int whiteDisks = 0;
+	int blackDisks = 0;
+
 	/**
 	 * The representation of the board. For convenience, the array actually has
 	 * two columns and two rows more that the actual game board. The 'middle' is
@@ -58,8 +61,10 @@ public class OthelloPosition {
 					c = 'E';
 				} else if (s.charAt(i) == 'O') {
 					c = 'W';
+					whiteDisks++;
 				} else {
 					c = 'B';
+					blackDisks++;
 				}
 				int column = ((i - 1) % 8) + 1;
 				int row = (i - 1) / 8 + 1;
@@ -77,6 +82,8 @@ public class OthelloPosition {
 		board[BOARD_SIZE / 2][BOARD_SIZE / 2] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2 + 1] = 'W';
 		board[BOARD_SIZE / 2][BOARD_SIZE / 2 + 1] = board[BOARD_SIZE / 2 + 1][BOARD_SIZE / 2] = 'B';
 		playerToMove = true;
+		whiteDisks = 2;
+		blackDisks = 2;
 	}
 
 	/* getMoves and helper functions */
@@ -346,6 +353,12 @@ public class OthelloPosition {
 		char playerColor = playerToMove ? 'W' : 'B';
 		char enemyColor = playerToMove ? 'B' : 'W';
 
+		if(playerToMove){
+		    whiteDisks++;
+        } else{
+		    blackDisks++;
+        }
+
 		flipEnemyDisks(action, enemyColor);
 		playerToMove = !playerToMove;
 
@@ -388,6 +401,13 @@ public class OthelloPosition {
         if(inside_bounds(x_pos, y_pos) && board[x_pos][y_pos] == playerColor){
             for (Point disk : disksToFlip) {
                 board[disk.x][disk.y] = playerColor;
+                if(playerColor == 'W'){
+                    whiteDisks++;
+                    blackDisks--;
+                }  else if(playerColor == 'B'){
+                    whiteDisks--;
+                    blackDisks++;
+                }
             }
         }
     }
@@ -458,37 +478,37 @@ public class OthelloPosition {
 	 * by '0' while black squares are marked by 'X'.
 	 */
 	public void illustrate() {
-		System.out.print("   ");
+		System.err.print("   ");
 		for (int i = 1; i <= BOARD_SIZE; i++)
-			System.out.print("| " + i + " ");
-		System.out.println("|");
+			System.err.print("| " + i + " ");
+		System.err.println("|");
 		printHorizontalBorder();
 		for (int i = 1; i <= BOARD_SIZE; i++) {
-			System.out.print(" " + i + " ");
+			System.err.print(" " + i + " ");
 			for (int j = 1; j <= BOARD_SIZE; j++) {
 				if (board[i][j] == 'W') {
-					System.out.print("| W ");
+					System.err.print("| W ");
 				} else if (board[i][j] == 'B') {
-					System.out.print("| B ");
+					System.err.print("| B ");
 				} else {
-					System.out.print("|   ");
+					System.err.print("|   ");
 				}
 			}
-			System.out.println("| " + i + " ");
+			System.err.println("| " + i + " ");
 			printHorizontalBorder();
 		}
-		System.out.print("   ");
+		System.err.print("   ");
 		for (int i = 1; i <= BOARD_SIZE; i++)
-			System.out.print("| " + i + " ");
-		System.out.println("|\n");
+			System.err.print("| " + i + " ");
+		System.err.println("|\n");
 	}
 
 	private void printHorizontalBorder() {
-		System.out.print("---");
+		System.err.print("---");
 		for (int i = 1; i <= BOARD_SIZE; i++) {
-			System.out.print("|---");
+			System.err.print("|---");
 		}
-		System.out.println("|---");
+		System.err.println("|---");
 	}
 
 	public String toString() {
