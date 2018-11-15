@@ -306,7 +306,7 @@ public class OthelloPosition {
 	/**
 	 * Return true if a neighbour of the given color exists at position x and y.
 	 */
-	private boolean enemyNeighbourExists(char enemyColor, int x_pos, int y_pos) {
+	public boolean enemyNeighbourExists(char enemyColor, int x_pos, int y_pos) {
 		for (int y = y_pos - 1; y <= y_pos + 1; y++) {
 			for (int x = x_pos - 1; x <= x_pos + 1; x++) {
 				if (inside_bounds(x, y) && board[x][y] == enemyColor) {
@@ -391,6 +391,31 @@ public class OthelloPosition {
             }
         }
     }
+
+    public int getNumEmptySpaces(){
+	    int num = 0;
+        for (char[] chars : board) {
+            for (char aChar : chars) {
+                if(aChar == 'E'){
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
+
+    public int getScoreForColor(char color){
+        int count = 0;
+	    for (char[] chars : board) {
+            for (char aChar : chars) {
+                if(aChar == color){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
 
     /**
 	 * Gives the number of points for the given action.

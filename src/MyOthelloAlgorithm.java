@@ -33,7 +33,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         while(isBelowTimeLimit()){
             currMaxDepth++;
             reachedMaxDepth = false;
-            for (OthelloAction action : actions) {
+            actions.stream().parallel().forEach(action -> {
                 try {
                     OthelloPosition posToMaybeMake = position.clone();
                     posToMaybeMake.makeMove(action);
@@ -44,6 +44,9 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
                 } catch (IllegalMoveException e) {
                     e.printStackTrace();
                 }
+            });
+            if(currMaxDepth >= 20){
+                break;
             }
         }
         actions.sort((x,y) -> Integer.compare(x.getValue(), y.getValue()) * -1);
@@ -58,7 +61,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     }
 
     public int alphaBeta(OthelloPosition pos) throws IllegalMoveException {
-        return maxValue(pos, -100, 100, 0);
+        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
     }
 
     public boolean gameIsPlayable(OthelloPosition playerTurn){
@@ -108,6 +111,30 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         }
         return value;
     }
+
+    public int miniMax(OthelloPosition pos, int currentDepth) throws IllegalMoveException {
+        if(isLeaf(pos, currentDepth)){
+            return evaluator.evaluate(pos);
+        }
+        if(currentDepth % 2 == 0){
+            int value = Integer.MIN_VALUE;
+            ArrayList<OthelloAction> actions = pos.getMoves();
+            for (OthelloAction action : actions) {
+                OthelloPosition tempPos = pos.makeMove(action);
+                value = Math.max(value, miniMax(tempPos, currentDepth + 1));
+            }
+            return value;
+        } else{
+            int value = Integer.MAX_VALUE;
+            ArrayList<OthelloAction> actions = pos.getMoves();
+            for (OthelloAction action : actions) {
+                OthelloPosition tempPos = pos.makeMove(action);
+                value = Math.min(value, miniMax(tempPos, currentDepth + 1));
+            }
+            return value;
+        }
+    }
+
 
     private boolean isLeaf(OthelloPosition pos, int currentDepth) {
         return currentDepth >= currMaxDepth || !isBelowTimeLimit() || !pos.canMakeMove();
