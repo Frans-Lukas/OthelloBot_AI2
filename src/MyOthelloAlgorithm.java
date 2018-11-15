@@ -1,16 +1,15 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class MyOthelloAlgorithm implements OthelloAlgorithm {
     private OthelloEvaluator evaluator;
     private int maxDepth = 8;
+    private long timeLimit;
+    private long currTime;
 
-    public MyOthelloAlgorithm() {
+    public MyOthelloAlgorithm(int timeLimit) {
         evaluator = new NaiveOthelloEvaluator();
+        this.timeLimit = timeLimit;
     }
 
     @Override
@@ -21,24 +20,33 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     @Override
     public OthelloAction evaluate(OthelloPosition position) {
         ArrayList<OthelloAction> actions = position.getMoves();
+        currTime = System.nanoTime();
+
         if(actions.size() == 0){
             OthelloAction passingAction = new OthelloAction(0,0);
             passingAction.pass = true;
             return passingAction;
         }
-
-        actions.stream().parallel().forEach(action -> {
-            OthelloPosition posToMaybeMake = position.clone();
-            try {
-                posToMaybeMake.makeMove(action);
-                action.setValue(alphaBeta(posToMaybeMake));
-            } catch (IllegalMoveException e) {
-                e.printStackTrace();
-            }
-        });
-        actions.sort(Comparator.comparingInt(OthelloAction::getValue));
-
-        return actions.get(actions.size() - 1);
+        maxDepth = 8;
+        while(isBelowTimeLimit()){
+            maxDepth++;
+            actions.stream().parallel().forEach(action -> {
+                OthelloPosition posToMaybeMake = position.clone();
+                try {
+                    posToMaybeMake.makeMove(action);
+                    int value = alphaBeta(posToMaybeMake);
+                    if(isBelowTimeLimit()){
+                        action.setValue(value);
+                    }
+                } catch (IllegalMoveException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        actions.sort((x,y) -> Integer.compare(x.getValue(), y.getValue()) * -1);
+        System.err.println("max depth: " + maxDepth);
+        System.err.println("value: " + actions.get(0).getValue());
+        return actions.get(0);
     }
 
     @Override
@@ -56,11 +64,15 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
         return playerTurn.canMakeMove() || oppositePlayerTurn.canMakeMove();
     }
 
+    boolean isBelowTimeLimit(){
+        return System.nanoTime() - currTime < (timeLimit)* 1000000000;
+    }
+
     private int maxValue(OthelloPosition pos, int alpha, int beta, int currentDepth) throws IllegalMoveException {
-        if(currentDepth >= maxDepth || !gameIsPlayable(pos)){
+        if(currentDepth >= maxDepth || !gameIsPlayable(pos) || !isBelowTimeLimit()){
             return evaluator.evaluate(pos);
         }
-        int value = -100;
+        int value = Integer.MIN_VALUE;
         ArrayList<OthelloAction> actions = pos.getMoves();
         for (OthelloAction action : actions) {
             OthelloPosition childMoves = pos.clone();
@@ -75,13 +87,15 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     }
 
     private int minValue(OthelloPosition pos, int alpha, int beta, int currentDepth) throws IllegalMoveException {
-        if(currentDepth >= maxDepth || !gameIsPlayable(pos)){
+        if(currentDepth >= maxDepth || !isBelowTimeLimit() || !pos.canMakeMove()){
             return evaluator.evaluate(pos);
         }
-        int value = 100;
+        int value = Integer.MAX_VALUE;
         ArrayList<OthelloAction> actions = pos.getMoves();
         for (OthelloAction action : actions) {
-            value = Math.min(value, maxValue(pos, alpha, beta, currentDepth + 1));
+            OthelloPosition childMoves = pos.clone();
+            childMoves.makeMove(action);
+            value = Math.min(value, maxValue(childMoves, alpha, beta, currentDepth + 1));
             beta = Math.min(beta, value);
             if(alpha >= beta){
                 break;

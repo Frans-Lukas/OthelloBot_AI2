@@ -87,26 +87,208 @@ public class OthelloPosition {
 	 * moves for the player who has the move.
 	 */
 
-	public ArrayList<OthelloAction> getMoves() {
-		char enemyColor = playerToMove ? 'B' : 'W';
+    public ArrayList<OthelloAction> getMoves() {
+        boolean[][] candidates = new boolean[BOARD_SIZE][BOARD_SIZE];
+        ArrayList<OthelloAction> moves = new ArrayList<OthelloAction>();
+        for (int i = 0; i < BOARD_SIZE; i++)
+            for (int j = 0; j < BOARD_SIZE; j++)
+                candidates[i][j] = isCandidate(i + 1, j + 1);
+        for (int i = 0; i < BOARD_SIZE; i++)
+            for (int j = 0; j < BOARD_SIZE; j++)
+                if (candidates[i][j])
+                    if (isMove(i + 1, j + 1))
+                        moves.add(new OthelloAction(i + 1, j + 1));
+        return moves;
+    }
 
-		ArrayList<OthelloAction> validMoves = new ArrayList<OthelloAction>();
-		for (int y = 1; y <= BOARD_SIZE; y++) {
-			for (int x = 1; x <= BOARD_SIZE; x++) {
-				if(board[x][y] == 'E' && enemyNeighbourExists(enemyColor, x, y)){
-					OthelloAction acition = new OthelloAction(x, y);
-					if(numPointsFor(acition) > 0){
-						validMoves.add(acition);
-					}
-				}
-			}
-		}
+    private boolean isMove(int row, int column) {
+        if (checkNorth(row, column))
+            return true;
+        if (checkNorthEast(row, column))
+            return true;
+        if (checkEast(row, column))
+            return true;
+        if (checkSouthEast(row, column))
+            return true;
+        if (checkSouth(row, column))
+            return true;
+        if (checkSouthWest(row, column))
+            return true;
+        if (checkWest(row, column))
+            return true;
+        if (checkNorthWest(row, column))
+            return true;
 
-		return validMoves;
-	}
+        return false;
+    }
+
+    private boolean checkNorth(int row, int column) {
+        if (!isOpponentSquare(row - 1, column))
+            return false;
+        for (int i = row - 2; i > 0; i--) {
+            if (isFree(i, column))
+                return false;
+            if (isOwnSquare(i, column))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the east from this position
+     */
+    private boolean checkEast(int row, int column) {
+        if (!isOpponentSquare(row, column + 1))
+            return false;
+        for (int i = column + 2; i <= BOARD_SIZE; i++) {
+            if (isFree(row, i))
+                return false;
+            if (isOwnSquare(row, i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the south from this position
+     */
+    private boolean checkSouth(int row, int column) {
+        if (!isOpponentSquare(row + 1, column))
+            return false;
+        for (int i = row + 2; i <= BOARD_SIZE; i++) {
+            if (isFree(i, column))
+                return false;
+            if (isOwnSquare(i, column))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the west from this position
+     */
+    private boolean checkWest(int row, int column) {
+        if (!isOpponentSquare(row, column - 1))
+            return false;
+        for (int i = column - 2; i > 0; i--) {
+            if (isFree(row, i))
+                return false;
+            if (isOwnSquare(row, i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the northest from this position
+     */
+    private boolean checkNorthEast(int row, int column) {
+        if (!isOpponentSquare(row - 1, column + 1))
+            return false;
+        for (int i = 2; row - i > 0 && column + i <= BOARD_SIZE; i++) {
+            if (isFree(row - i, column + i))
+                return false;
+            if (isOwnSquare(row - i, column + i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the southeast from this position
+     */
+    private boolean checkSouthEast(int row, int column) {
+        if (!isOpponentSquare(row + 1, column + 1))
+            return false;
+        for (int i = 2; row + i <= BOARD_SIZE && column + i <= BOARD_SIZE; i++) {
+            if (isFree(row + i, column + i))
+                return false;
+            if (isOwnSquare(row + i, column + i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the soutwest from this position
+     */
+    private boolean checkSouthWest(int row, int column) {
+        if (!isOpponentSquare(row + 1, column - 1))
+            return false;
+        for (int i = 2; row + i <= BOARD_SIZE && column - i > 0; i++) {
+            if (isFree(row + i, column - i))
+                return false;
+            if (isOwnSquare(row + i, column - i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if it is possible to do a move to the northwest from this position
+     */
+    private boolean checkNorthWest(int row, int column) {
+        if (!isOpponentSquare(row - 1, column - 1))
+            return false;
+        for (int i = 2; row - i > 0 && column - i > 0; i++) {
+            if (isFree(row - i, column - i))
+                return false;
+            if (isOwnSquare(row - i, column - i))
+                return true;
+        }
+        return false;
+    }
+    private boolean isOpponentSquare(int row, int column) {
+        if (playerToMove && (board[row][column] == 'B'))
+            return true;
+        if (!playerToMove && (board[row][column] == 'W'))
+            return true;
+        return false;
+    }
+
+    private boolean isOwnSquare(int row, int column) {
+        if (!playerToMove && (board[row][column] == 'B'))
+            return true;
+        if (playerToMove && (board[row][column] == 'W'))
+            return true;
+        return false;
+    }
+    private boolean isCandidate(int row, int column) {
+        if (!isFree(row, column))
+            return false;
+        if (hasNeighbor(row, column))
+            return true;
+        return false;
+    }
+
+    private boolean hasNeighbor(int row, int column) {
+        if (!isFree(row - 1, column))
+            return true;
+        if (!isFree(row - 1, column + 1))
+            return true;
+        if (!isFree(row, column + 1))
+            return true;
+        if (!isFree(row + 1, column + 1))
+            return true;
+        if (!isFree(row + 1, column))
+            return true;
+        if (!isFree(row + 1, column - 1))
+            return true;
+        if (!isFree(row, column - 1))
+            return true;
+        if (!isFree(row - 1, column - 1))
+            return true;
+        return false;
+    }
+
+    private boolean isFree(int row, int column) {
+        if (board[row][column] == 'E')
+            return true;
+        return false;
+    }
 
 
-	public boolean canMakeMove(){
+    public boolean canMakeMove(){
 		char enemyColor = playerToMove ? 'B' : 'W';
 		for (int y = 1; y <= BOARD_SIZE; y++) {
 			for (int x = 1; x <= BOARD_SIZE; x++) {
