@@ -60,7 +60,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     }
 
     public int alphaBeta(OthelloPosition pos) throws IllegalMoveException {
-        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, pos.playerToMove);
+        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, !pos.playerToMove);
     }
 
     public boolean gameIsPlayable(OthelloPosition playerTurn){
@@ -75,7 +75,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
 
     private int maxValue(OthelloPosition pos, int alpha, int beta, int currentDepth, boolean isWhite) throws IllegalMoveException {
         if(isLeaf(pos, currentDepth)){
-            pos.playerToMove = true;
+            pos.playerToMove = isWhite;
             return evaluator.evaluate(pos);
         }
         int value = Integer.MIN_VALUE;
@@ -95,7 +95,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
 
     private int minValue(OthelloPosition pos, int alpha, int beta, int currentDepth, boolean isWhite) throws IllegalMoveException {
         if(isLeaf(pos, currentDepth)){
-            pos.playerToMove = true;
+            pos.playerToMove = isWhite;
             return evaluator.evaluate(pos);
         }
         int value = Integer.MAX_VALUE;
@@ -105,7 +105,7 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
             OthelloPosition tempPos = pos.clone();
             tempPos.makeMove(action);
 
-            value = Math.min(value, maxValue(tempPos, alpha, beta, currentDepth + 1, pos.playerToMove));
+            value = Math.min(value, maxValue(tempPos, alpha, beta, currentDepth + 1, isWhite));
             beta = Math.min(beta, value);
             if(alpha >= beta){
                 break;
