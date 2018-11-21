@@ -1,13 +1,14 @@
 public class NaiveOthelloEvaluator implements OthelloEvaluator {
     @Override
     public int evaluate(OthelloPosition position) {
-        if(position.getNumEmptySpaces() >= 10){
-            return heuristicMobility(position) + heuristicPotentialMobility(position);
-        }
-        return heuristicCoinParity(position);
+        return heuristicDiskParity(position) + countCorners(position) * 20;
+//        if(position.getNumEmptySpaces() >= 2){
+//            return heuristicMobility(position) + heuristicPotentialMobility(position);
+//        }
+//        return heuristicDiskParity(position);
     }
 
-    public int heuristicCoinParity(OthelloPosition position){
+    public int heuristicDiskParity(OthelloPosition position){
         char playerColor = position.playerToMove ? 'W' : 'B';
         char enemyColor = position.playerToMove ? 'B' : 'W';
         int playerScore = 0;

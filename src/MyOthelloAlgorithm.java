@@ -60,7 +60,8 @@ public class MyOthelloAlgorithm implements OthelloAlgorithm {
     }
 
     public int alphaBeta(OthelloPosition pos) throws IllegalMoveException {
-        return maxValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, !pos.playerToMove);
+        //min value is called first since the pos sent is the pos after the bot has made a move.
+        return minValue(pos, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, !pos.playerToMove);
     }
 
     public boolean gameIsPlayable(OthelloPosition playerTurn){
