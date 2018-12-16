@@ -1,7 +1,30 @@
 public class NaiveOthelloEvaluator implements OthelloEvaluator {
     @Override
     public int evaluate(OthelloPosition position) {
-        return heuristicDiskParity(position) + countCorners(position) * 20;
+        if(position.getNumEmptySpaces() > 3){
+            char playerColor = position.playerToMove ? 'W' : 'B';
+            char enemyColor = position.playerToMove ? 'B' : 'W';
+            int score = 0;
+            //https://github.com/hylbyj/Alpha-Beta-Pruning-for-Othello-Game/blob/master/readme_alpha_beta.txt
+            int diskScoreBoard[][] = {{8, -3, 2, 2, 2, 2, -3, 8},
+                                    {-3, -4, -1, -1, -1, -1, -4, -3},
+                                    {2, -1, 1, 0, 0, 1, -1, 2},
+                                    {2, -1, 0, 1, 1, 0, -1, 2},
+                                    {2, -1, 0, 1, 1, 0, -1, 2},
+                                    {2, -1, 1, 0, 0, 1, -1, 2},
+                                    {-3, -4, -1, -1, -1, -1, -4, -3},
+                                    {8, -3, 2, 2, 2, 2, -3, 8}};
+            for (int y = 1; y <= 8; y++) {
+                for (int x = 1; x <= 8; x++) {
+                    if(position.board[x][y] == playerColor){
+                        score += diskScoreBoard[x - 1][y - 1];
+                    }
+                }
+            }
+            return score;
+        } else{
+            return countPointDifference(position) * 1000;
+        }
 //        if(position.getNumEmptySpaces() >= 2){
 //            return heuristicMobility(position) + heuristicPotentialMobility(position);
 //        }
